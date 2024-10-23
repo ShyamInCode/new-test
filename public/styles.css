@@ -1,0 +1,321 @@
+body {
+    background-color: #F3F2F2;
+  }
+  
+  .hidden-details { display: none; }
+      .arrow-icon { cursor: pointer; }
+      .dashboard-container {
+        display: flex;
+        height: 300px;
+        margin: 1rem; /* Add this line */
+        margin-bottom: 1rem;
+        border: 1px solid #d8dde6; /* Add this line */
+        border-radius: 4px; /* Optional: adds rounded corners */
+      }
+      .left-component {
+        width: 30%;
+        background-color: #f3f3f3;
+        padding: 1rem;
+        border-right: 1px solid #d8dde6;
+      }
+      .right-component {
+        display: flex;
+        width: 70%;
+        height: 100%;
+        padding: 1rem; /* Add padding here */
+      }
+      .filter-form {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+      }
+      .filter-form label {
+        margin-bottom: 0.5rem;
+        font-weight: bold;
+      }
+      .filter-form select, .filter-form input {
+        margin-bottom: 1rem;
+      }
+      .filter-form button {
+        margin-top: auto;
+      }
+      .status-counts {
+        display: flex;
+        width: 50%;
+        height: 100%;
+      }
+      .status-column {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        height: 100%;
+      }
+      .status-item {
+        display: flex;
+        align-items: center;
+      }
+      .status-color {
+        width: 16px;
+        height: 16px;
+        border-radius: 4px;
+        margin-right: 8px;
+      }
+      .status-error { background-color: #c23934; }
+      .status-building-error { background-color: #ff9e9e; }
+      .status-building { background-color: #54698d; }
+      .status-ready { background-color: #4bca81; }
+      .status-running { background-color: #04844b; }
+      .status-paused { background-color: #ffb75d; }
+      .status-stopped { background-color: #e0e5ee; }
+      .status-scheduled { background-color: #0070d2; }
+      .status-awaiting-trigger { background-color: #eb7092; }
+      .status-inactive-trigger { background-color: #a094ed; }
+      
+      .chart-container {
+        width: 50%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      #statusChart {
+        width: 100%;
+        height: 100%;
+      }
+      .slds-scope {
+        margin-left: 7rem;
+        margin-right: 7rem;
+        border: 1px solid #d8dde6; /* Add this line */
+        padding: 0; /* Changed: removed all padding */
+        box-sizing: border-box;
+        background-color: #ffffff; /* Add this line to ensure the content area remains white */
+      }
+      .slds-m-around_medium {
+        margin-left: 0;
+        margin-right: 0;
+        overflow-x: auto;
+        padding-bottom: 1rem; /* Add some padding to ensure scrollbar doesn't cover content */
+        margin: 1rem; /* Add this line */
+        border: 1px solid #d8dde6; /* Add this line */
+        border-radius: 4px; /* Optional: adds rounded corners */
+      }
+      table {
+        margin-left: 0;
+        margin-right: 0;
+      }
+      .slds-page-header {
+        text-align: center;
+        background-color: #333333;
+        padding: 1rem; /* Add some padding for better spacing */
+      }
+      .slds-page-header__title {
+        display: inline-block;
+        color: white;
+        font-size: 24px; /* Increase font size for better visibility */
+        font-weight: bold; /* Make the text bold */
+      }
+  
+  /* Add these new rules and modify existing ones */
+  
+  #dataTable {
+    min-width: 800px; /* Adjust this value based on your table's content */
+    width: 100%;
+  }
+  
+  /* Ensure the table header stays fixed while scrolling horizontally */
+  #dataTable thead {
+    position: sticky;
+    top: 0;
+    background-color: #fff; /* Match this with your table header background color */
+    z-index: 1;
+  }
+  
+  /* Increase font size for table cells */
+  #dataTable td, #dataTable th {
+    font-size: 14px; /* Adjust this value as needed */
+  }
+  
+  /* Center align the text in the status column (assuming it's the third column) */
+  #dataTable td:nth-child(3),
+  #dataTable th:nth-child(3) {
+    text-align: center;
+    padding-right: 1.5rem; /* Increase right padding of Status column */
+  }
+  
+  /* Style for each status in the status column */
+  #dataTable td:nth-child(3) {
+    font-weight: bold;
+    padding: 0.5rem;
+    border-radius: 4px;
+    padding-right: 1.5rem; /* Keep the increased right padding */
+  }
+  
+  #dataTable td:nth-child(3)[data-status="Error"] {
+    background-color: #c23934;
+    color: white;
+  }
+  
+  #dataTable td:nth-child(3)[data-status="Building Error"] {
+    background-color: #ff9e9e;
+    color: #8b0000;
+  }
+  
+  #dataTable td:nth-child(3)[data-status="Building"] {
+    background-color: #54698d;
+    color: white;
+  }
+  
+  #dataTable td:nth-child(3)[data-status="Ready"] {
+    background-color: #4bca81;
+    color: white;
+  }
+  
+  #dataTable td:nth-child(3)[data-status="Running"] {
+    background-color: #04844b;
+    color: white;
+  }
+  
+  #dataTable td:nth-child(3)[data-status="Paused"] {
+    background-color: #ffb75d;
+    color: #514f4d;
+  }
+  
+  #dataTable td:nth-child(3)[data-status="Stopped"] {
+    background-color: #e0e5ee;
+    color: #514f4d;
+  }
+  
+  #dataTable td:nth-child(3)[data-status="Scheduled"] {
+    background-color: #0070d2;
+    color: white;
+  }
+  
+  #dataTable td:nth-child(3)[data-status="Awaiting Trigger"] {
+    background-color: #eb7092;
+    color: white;
+  }
+  
+  #dataTable td:nth-child(3)[data-status="Inactive Trigger"] {
+    background-color: #a094ed;
+    color: white;
+  }
+  
+  /* Add space between Status and LastRunTime columns */
+  #dataTable td:nth-child(4),
+  #dataTable th:nth-child(4) {
+    padding-left: 1.5rem; /* Increase left padding of LastRunTime column */
+  }
+  
+  /* Media query for small screens */
+  @media screen and (max-width: 768px) {
+    .slds-scope {
+      margin-left: 0.5rem; /* Reduce side margins on small screens */
+      margin-right: 0.5rem;
+    }
+  
+    .dashboard-container {
+      flex-direction: column;
+      height: auto;
+      margin: 0.5rem; /* Add this line for smaller margin on mobile */
+      /* Border remains the same on small screens */
+    }
+  
+    .left-component,
+    .right-component {
+      width: 100%;
+    }
+  
+    .right-component {
+      flex-direction: column;
+    }
+  
+    .status-counts,
+    .chart-container {
+      width: 100%;
+    }
+  
+    .slds-m-around_medium {
+      margin: 0.5rem; /* Add this line for smaller margin on mobile */
+      /* Border remains the same on small screens */
+    }
+  
+    /* ... other existing mobile styles ... */
+  }
+  
+  /* Hide the last column header */
+  #dataTable th:last-child {
+    display: table-cell; /* Ensure it's visible */
+  }
+  
+  /* Style the "More Details" button */
+  .arrow-icon {
+    cursor: pointer;
+    background-color: #F3F2F2;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    transition: background-color 0.3s ease;
+    margin: 0 auto; /* Center the button horizontally in its cell */
+  }
+  
+  .arrow-icon:hover {
+    background-color: #E0E0E0;
+  }
+  
+  /* Center the content of the cell containing the arrow-icon */
+  td .arrow-icon {
+    display: flex;
+    justify-content: center;
+  }
+  
+  /* Optional: Remove the header for the column containing the arrow-icon */
+  th:has(+ td .arrow-icon) {
+    display: none;
+  }
+  
+  /* Style for the description in the hidden details */
+  .hidden-details .slds-box p strong {
+    display: inline-block;
+    vertical-align: top;
+    width: 120px; /* Adjust this width as needed */
+  }
+  
+  .hidden-details .slds-box p {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 0.5rem;
+  }
+  
+  .hidden-details .slds-box p span {
+    flex: 1;
+    min-width: 0;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+  
+  /* ... rest of the existing code ... */
+  
+  /* Style for all table header cells */
+  #dataTable th {
+    background-color: #f3f3f3; /* Use the color that matches your design */
+    color: #16325c; /* Adjust text color as needed */
+    font-weight: bold;
+    padding: 0.75rem;
+    text-align: left;
+  }
+  
+  /* Remove any specific styling that hides the last column header */
+  #dataTable th:last-child {
+    display: table-cell; /* Ensure it's visible */
+  }
+  
+  /* If you want to remove the text from the last header but keep the background */
+  #dataTable th:last-child {
+    color: transparent; /* Hide the text */
+    user-select: none; /* Prevent text selection */
+  }

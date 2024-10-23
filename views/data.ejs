@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Automation Dashboard</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@salesforce-ux/design-system@2.17.5/assets/styles/salesforce-lightning-design-system.min.css">
+  <link rel="stylesheet" href="/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="slds-scope">
+    <div class="slds-page-header">
+      <h1 class="slds-page-header__title">Automation Dashboard</h1>
+    </div>
+    
+    <!-- New container with two sub-components -->
+    <div class="dashboard-container">
+      <div class="left-component">
+        <form action="/filter" method="POST" class="filter-form">
+          <label for="businessUnit">Business Unit:</label>
+          <select name="businessUnit" id="businessUnit" class="slds-select">
+            <option value="All" <%= locals.businessUnit === 'All' ? 'selected' : '' %>>All Business Units</option>
+            <option value="Corporate" <%= locals.businessUnit === 'Corporate' ? 'selected' : '' %>>Corporate</option>
+          </select>
+
+          <label for="status">Status:</label>
+          <select name="status" id="status" class="slds-select">
+            <option value="All" <%= locals.status === 'All' ? 'selected' : '' %>>All Statuses</option>
+            <option value="Error" <%= locals.status === 'Error' ? 'selected' : '' %>>Error</option>
+            <option value="Building Error" <%= locals.status === 'Building Error' ? 'selected' : '' %>>Building Error</option>
+            <option value="Building" <%= locals.status === 'Building' ? 'selected' : '' %>>Building</option>
+            <option value="Ready" <%= locals.status === 'Ready' ? 'selected' : '' %>>Ready</option>
+            <option value="Running" <%= locals.status === 'Running' ? 'selected' : '' %>>Running</option>
+            <option value="Paused" <%= locals.status === 'Paused' ? 'selected' : '' %>>Paused</option>
+            <option value="Stopped" <%= locals.status === 'Stopped' ? 'selected' : '' %>>Stopped</option>
+            <option value="Scheduled" <%= locals.status === 'Scheduled' ? 'selected' : '' %>>Scheduled</option>
+            <option value="Awaiting Trigger" <%= locals.status === 'Awaiting Trigger' ? 'selected' : '' %>>Awaiting Trigger</option>
+            <option value="Inactive Trigger" <%= locals.status === 'Inactive Trigger' ? 'selected' : '' %>>Inactive Trigger</option>
+          </select>
+
+          <label for="searchName">Search by name:</label>
+          <input type="text" name="searchName" id="searchName" class="slds-input" value="<%= locals.searchName || '' %>" placeholder="Enter name...">
+
+          <button type="submit" class="slds-button slds-button_brand">Apply Filter</button>
+        </form>
+      </div>
+      <div class="right-component">
+        <div class="status-counts">
+          <div class="status-column">
+            <div class="status-item">
+              <div class="status-color status-error"></div>
+              Error (<%= statusCounts['Error'] %>)
+            </div>
+            <div class="status-item">
+              <div class="status-color status-building-error"></div>
+              Building Error (<%= statusCounts['Building Error'] %>)
+            </div>
+            <div class="status-item">
+              <div class="status-color status-building"></div>
+              Building (<%= statusCounts['Building'] %>)
+            </div>
+            <div class="status-item">
+              <div class="status-color status-ready"></div>
+              Ready (<%= statusCounts['Ready'] %>)
+            </div>
+            <div class="status-item">
+              <div class="status-color status-running"></div>
+              Running (<%= statusCounts['Running'] %>)
+            </div>
+          </div>
+          <div class="status-column">
+            <div class="status-item">
+              <div class="status-color status-paused"></div>
+              Paused (<%= statusCounts['Paused'] %>)
+            </div>
+            <div class="status-item">
+              <div class="status-color status-stopped"></div>
+              Stopped (<%= statusCounts['Stopped'] %>)
+            </div>
+            <div class="status-item">
+              <div class="status-color status-scheduled"></div>
+              Scheduled (<%= statusCounts['Scheduled'] %>)
+            </div>
+            <div class="status-item">
+              <div class="status-color status-awaiting-trigger"></div>
+              Awaiting Trigger (<%= statusCounts['Awaiting Trigger'] %>)
+            </div>
+            <div class="status-item">
+              <div class="status-color status-inactive-trigger"></div>
+              Inactive Trigger (<%= statusCounts['Inactive Trigger'] %>)
+            </div>
+          </div>
+        </div>
+        <div class="chart-container">
+          <canvas id="statusChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="slds-m-around_medium">
+      <table id="dataTable" class="slds-table slds-table_cell-buffer slds-table_bordered">
+        <thead>
+          <tr class="slds-line-height_reset">
+            <th scope="col">Business Unit</th>
+            <th scope="col">Name</th>
+            <th scope="col">Status</th>
+            <th scope="col">Last Run Time</th>
+            <th scope="col">Modified By</th>
+            <th scope="col"></th> <!-- Empty header for the "More Details" column -->
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+          <% data.forEach((item, index) => { %>
+            <tr>
+              <td><%= item.BusinessUnit %></td>
+              <td><%= item.Name %></td>
+              <td data-status="<%= item.Status %>"><%= item.Status %></td>
+              <td><%= item.LastRunTime %></td>
+              <td><%= item.ModifiedBy %></td>
+              <td>
+                <div class="arrow-icon" data-index="<%= index %>">&#9660;</div>
+              </td>
+            </tr>
+            <tr class="hidden-details" id="details-<%= index %>">
+              <td colspan="6">
+                <div class="slds-box slds-theme_shade">
+                  <p><strong>Description:</strong> <span><%= item.Description %></span></p>
+                  <p><strong>Customer Key:</strong> <%= item.CustomerKey %></p>
+                  <p><strong>Is Active:</strong> <%= item.IsActive %></p>
+                  <p><strong>Created Date:</strong> <%= item.CreatedDate %></p>
+                  <p><strong>Modified Date:</strong> <%= item.ModifiedDate %></p>
+                  <p><strong>Program ID:</strong> <%= item.ProgramID %></p>
+                  <p><strong>Category ID:</strong> <%= item.CategoryID %></p>
+                  <p><strong>Scheduled Time:</strong> <%= item.ScheduledTime %></p>
+                  <p><strong>Last Save Date:</strong> <%= item.LastSaveDate %></p>
+                  <p><strong>Created By:</strong> <%= item.CreatedBy %></p>
+                  <p><strong>Automation Type:</strong> <%= item.AutomationType %></p>
+                  <p><strong>Recurrence ID:</strong> <%= item.RecurrenceID %></p>
+                </div>
+              </td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div id="statusCountsData" data-counts='<%= JSON.stringify(statusCounts) %>' style="display: none;"></div>
+  <script src="/chart-script.js"></script>
+  <script src="/script.js"></script>
+</body>
+</html>
