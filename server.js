@@ -196,6 +196,34 @@ app.get('/oauth2/callback', async (req, res) => {
   }
 });
 
+app.post('/filter', async (req, res) => {
+  try {
+    const { businessUnit, status, searchName } = req.body;
+    let filteredData = globalExtractedData;
+
+    if (status !== 'All') {
+      filteredData = filteredData.filter(item => item.Status === status);
+    }
+
+    if (searchName) {
+      filteredData = filteredData.filter(item => 
+        item.Name.toLowerCase().includes(searchName.toLowerCase())
+      );
+    }
+
+    res.render('data', { 
+      data: filteredData, 
+      businessUnit: businessUnit, 
+      status: status,
+      searchName: searchName,
+      statusCounts: globalStatusCounts  // Use the global status counts
+    });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).send('An error occurred');
+  }
+});
+
 app.get('/logout', (req, res) => {
   // Clear any stored tokens or sessions here
   res.redirect('/');
